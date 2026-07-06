@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Outfit', 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --color-navy-950: #fcfcfa; /* White mode base */
+  --color-navy-900: #f4f4f0;
+  --color-navy-850: #e9e9e3;
+  
+  --color-accent-purple: #8b5cf6; /* Deeper violet for readability in light mode */
+  --color-accent-blue: #2563eb;
+  --color-accent-indigo: #4f46e5;
+}
+
+/* Custom background animation and scrollbar styles */
+@layer base {
+  body {
+    background-color: #fcfcfa;
+    color: #1f2937;
+    overflow-x: hidden;
+    font-family: var(--font-sans);
+    transition: background-color 1s ease-in-out;
+  }
+
+  /* Custom Scrollbar for Light Mode */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #fcfcfa;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.18);
+  }
+}
+
+/* Light Glassmorphism styles (Notion & Apple style) */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.glass-panel-interactive {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-interactive:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: 0 12px 30px rgba(139, 92, 246, 0.08);
+  transform: translateY(-2px);
+}
+
+.glass-input {
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.1);
+  outline: none;
+}
+
+/* Floating Orb animation (Soft pastel colors) */
+@keyframes float-slow {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -40px) scale(1.08);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.96);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+@keyframes float-medium {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(-30px, 30px) scale(1.1);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-float-1 {
+  animation: float-slow 18s infinite ease-in-out;
+}
+
+.animate-float-2 {
+  animation: float-medium 14s infinite ease-in-out;
+}
+
+.animate-float-3 {
+  animation: float-slow 22s infinite ease-in-out;
+}
+
+/* Hide default checkboxes and radio UI */
+.custom-radio input[type="radio"] {
+  display: none;
+}
+
+/* Notion-style subtle markers */
+.notion-quote {
+  border-left: 3px solid rgba(139, 92, 246, 0.6);
+  padding-left: 12px;
+}
