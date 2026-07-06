@@ -8,6 +8,7 @@ import { ResultPage } from './components/ResultPage';
 import { getRandomizedQuestions, mbtiGradientsLight, mbtiProfiles } from './data/mbtiData';
 import type { Question } from './data/mbtiData';
 
+import { sounds } from './utils/sound';
 
 type PageType = 'main' | 'quiz' | 'loading' | 'result';
 
@@ -16,7 +17,7 @@ function App() {
   const [currentQuestions, setCurrentQuestions] = useState<Question[]>([]);
   const [runningAnswers, setRunningAnswers] = useState<Record<number, number>>({});
   const [scores, setScores] = useState({ EI: 50, SN: 50, TF: 50, JP: 50 });
-  const [mbti, setMbti] = useState('ESTJ'); // Default running MBTI base
+  const [mbti, setMbti] = useState('ESTJ');
 
   // Initialize questions on mount
   useEffect(() => {
@@ -40,14 +41,13 @@ function App() {
         JP: sharedJp
       });
       setMbti(sharedMbti.toUpperCase());
-      
-      // Seed running answers to something non-empty so background gradient displays
       setRunningAnswers({ 999: 0 }); 
       setPage('result');
     }
   }, []);
 
   const handleStart = () => {
+    sounds.playSelect();
     setPage('quiz');
   };
 
@@ -62,7 +62,7 @@ function App() {
     let jpSum = 0;
 
     currentQuestions.forEach(q => {
-      const ans = updatedAnswers[q.id] || 0; // 0 if not answered yet
+      const ans = updatedAnswers[q.id] || 0;
       const score = ans * q.direction;
 
       if (q.dimension === 'EI') eiSum += score;
@@ -141,10 +141,12 @@ function App() {
   };
 
   const handleLoadingComplete = () => {
+    sounds.playVictory(); // Trigger retro arpeggio arpeggio!
     setPage('result');
   };
 
   const handleRetry = () => {
+    sounds.playSelect();
     setRunningAnswers({});
     setScores({ EI: 50, SN: 50, TF: 50, JP: 50 });
     setMbti('ESTJ');
@@ -153,51 +155,47 @@ function App() {
     window.history.replaceState({}, document.title, window.location.pathname);
   };
 
-  // Determine background based on answer progress
+  // Determine retro background color
   const answeredCount = Object.keys(runningAnswers).length;
   const isTestingStarted = answeredCount > 0;
 
-  const bgGradientClass =
+  // Render retro styling backgrounds
+  const bgStyleClass =
     (page === 'quiz' || page === 'loading' || page === 'result') && isTestingStarted
       ? mbtiGradientsLight[mbti] || 'from-indigo-50/50 to-purple-50/50'
-      : 'from-[#fcfcfa] to-[#fcfcfa]'; // Clean white mode on start and landing page
+      : 'from-[#f4f4f0] to-[#f4f4f0]';
 
   return (
-    <div className={`min-h-screen bg-gradient-to-tr ${bgGradientClass} text-slate-800 flex flex-col justify-between font-sans relative overflow-hidden transition-all duration-1000 ease-in-out`}>
-      {/* Decorative soft glowing background orbs (more subtle in light mode) */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-200/25 blur-[120px] pointer-events-none animate-float-1" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-purple-200/20 blur-[150px] pointer-events-none animate-float-2" />
-      <div className="absolute top-[40%] left-[30%] w-[30%] h-[30%] rounded-full bg-blue-200/15 blur-[100px] pointer-events-none animate-float-3" />
-
-      {/* Header (Notion Inspired) */}
-      <header className="w-full max-w-4xl mx-auto px-6 py-6 flex items-center justify-between relative z-20 border-b border-black/5">
+    <div className={`min-h-screen bg-gradient-to-tr ${bgStyleClass} retro-grid text-slate-900 flex flex-col justify-between relative overflow-hidden transition-all duration-500`}>
+      {/* Header Frame (8-Bit border separator) */}
+      <header className="w-full max-w-4xl mx-auto px-6 py-6 flex items-center justify-between relative z-20 border-b-4 border-slate-900">
         <button
           onClick={handleRetry}
           className="flex items-center gap-2 cursor-pointer group"
         >
-          <div className="p-1.5 rounded-lg bg-black/5 border border-black/10 group-hover:border-purple-500/30 transition-all">
-            <BrainCircuit size={18} className="text-purple-600" />
+          <div className="p-1 border-2 border-slate-900 bg-white group-hover:bg-purple-100 transition-all">
+            <BrainCircuit size={18} className="text-purple-650" />
           </div>
-          <span className="font-display font-bold tracking-tight text-slate-800 hover:text-purple-600 transition-colors">
+          <span className="font-display font-extrabold tracking-tight text-slate-900 group-hover:text-purple-600 transition-colors">
             AI MBTI LAB
           </span>
         </button>
-        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-mono">
-          <Sparkles size={12} className="text-purple-500 animate-pulse" />
-          v1.0.0
+        <div className="flex items-center gap-1.5 text-xs text-slate-800 font-mono font-bold">
+          <Sparkles size={12} className="text-purple-600 animate-pulse" />
+          v1.0.0 (8-BIT)
         </div>
       </header>
 
       {/* Main Pages Content */}
-      <main className="flex-1 w-full max-w-4xl mx-auto flex items-center justify-center relative z-10">
+      <main className="flex-1 w-full max-w-4xl mx-auto flex items-center justify-center relative z-10 py-4">
         <AnimatePresence mode="wait">
           {page === 'main' && (
             <motion.div
               key="main"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.4 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
               className="w-full"
             >
               <MainPage onStart={handleStart} />
@@ -210,7 +208,7 @@ function App() {
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.2 }}
               className="w-full"
             >
               <QuizPage
@@ -227,7 +225,7 @@ function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.2 }}
               className="w-full"
             >
               <LoadingPage onComplete={handleLoadingComplete} />
@@ -237,10 +235,10 @@ function App() {
           {page === 'result' && (
             <motion.div
               key="result"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
               className="w-full"
             >
               <ResultPage mbti={mbti} scores={scores} onRetry={handleRetry} />
@@ -250,9 +248,9 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full max-w-4xl mx-auto px-6 py-6 relative z-20 border-t border-black/5 text-center">
-        <p className="text-xxs sm:text-xs text-slate-400 font-light font-mono">
-          © {new Date().getFullYear()} AI MBTI LAB. All rights reserved. Created with Apple & Notion design languages.
+      <footer className="w-full max-w-4xl mx-auto px-6 py-6 relative z-20 border-t-4 border-slate-900 text-center">
+        <p className="text-xxs sm:text-xs text-slate-800 font-bold font-mono">
+          © {new Date().getFullYear()} AI MBTI LAB. INSERT COIN TO PLAY. 8-BIT EDITION.
         </p>
       </footer>
     </div>

@@ -54,71 +54,60 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({ onComplete }) => {
     };
   }, [onComplete]);
 
+  // GameBoy/NES segmented loading bar variables
+  const totalBlocks = 12;
+  const filledBlocks = Math.floor((progress / 100) * totalBlocks);
+
   return (
     <div className="w-full max-w-md mx-auto flex flex-col items-center justify-center min-h-[75vh] px-6 py-12 relative z-10">
-      {/* Morphing Glowing AI Orb (Light Mode Style) */}
-      <div className="relative w-40 h-40 mb-12 flex items-center justify-center">
-        {/* Outer Glows */}
-        <motion.div
-          animate={{
-            scale: [1, 1.15, 0.95, 1.05, 1],
-            rotate: [0, 90, 180, 270, 360],
-            borderRadius: ["42% 58% 70% 30% / 45% 45% 55% 55%", "70% 30% 52% 48% / 60% 40% 60% 40%", "42% 58% 70% 30% / 45% 45% 55% 55%"]
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute inset-0 bg-gradient-to-tr from-accent-blue/20 via-accent-indigo/15 to-accent-purple/25 blur-xl pointer-events-none"
-        />
+      {/* Animated CPU Block Badge */}
+      <motion.div
+        animate={{
+          scale: [1, 1.05, 0.95, 1.05, 1],
+          y: [-4, 4, -4, 4, -4]
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="w-28 h-28 border-4 border-slate-900 bg-yellow-300 shadow-[4px_4px_0_0_#1a1a24] flex items-center justify-center mb-12"
+      >
+        <Cpu size={36} className="text-slate-900 animate-pulse" />
+      </motion.div>
 
-        <motion.div
-          animate={{
-            scale: [1, 1.08, 0.92, 1.04, 1],
-            rotate: [360, 270, 180, 90, 0],
-            borderRadius: ["50% 50% 30% 70% / 50% 60% 40% 50%", "30% 70% 70% 30% / 50% 40% 60% 50%", "50% 50% 30% 70% / 50% 60% 40% 50%"]
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute w-[85%] h-[85%] bg-gradient-to-bl from-accent-purple/10 via-transparent to-accent-blue/15 border border-purple-500/20 pointer-events-none"
-        />
-
-        {/* Inner core */}
-        <div className="absolute w-[40%] h-[40%] bg-white rounded-full flex items-center justify-center shadow-lg border border-black/5 z-20">
-          <Cpu size={24} className="text-purple-600 animate-pulse" />
-        </div>
-      </div>
-
-      {/* Progress text */}
+      {/* Progress status */}
       <div className="w-full text-center mb-6">
-        <h3 className="font-display font-bold text-slate-800 text-lg tracking-wide mb-2">
-          {Math.round(progress)}%
+        <h3 className="font-display font-black text-slate-900 text-base tracking-wide mb-4">
+          ANALYZING... {Math.round(progress)}%
         </h3>
         
-        {/* Progress Bar */}
-        <div className="w-full h-1 bg-black/5 rounded-full overflow-hidden mb-6">
-          <div
-            className="h-full bg-gradient-to-r from-accent-blue to-accent-purple transition-all duration-75"
-            style={{ width: `${progress}%` }}
-          />
+        {/* Chunky Retro HP/Energy loading bar */}
+        <div className="flex gap-1.5 p-1.5 border-4 border-slate-900 bg-white shadow-[4px_4px_0_0_#1a1a24] justify-center mb-6">
+          {Array.from({ length: totalBlocks }).map((_, i) => (
+            <div
+              key={i}
+              className={`w-6 h-8 border-2 border-slate-900 transition-colors duration-100 ${
+                i < filledBlocks 
+                  ? 'bg-green-400 shadow-[inset_-2px_-2px_0px_0px_rgba(0,0,0,0.15)]' 
+                  : 'bg-slate-100'
+              }`}
+            />
+          ))}
         </div>
 
-        {/* Dynamic analysis status message */}
-        <div className="h-8 flex items-center justify-center">
+        {/* Dynamic status text */}
+        <div className="h-10 flex items-center justify-center mt-4">
           <AnimatePresence mode="wait">
             <motion.p
               key={stepIndex}
-              initial={{ opacity: 0, y: 5 }}
+              initial={{ opacity: 0, y: 3 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              transition={{ duration: 0.2 }}
-              className="text-slate-500 font-sans text-sm font-light tracking-wide text-center"
+              exit={{ opacity: 0, y: -3 }}
+              transition={{ duration: 0.1 }}
+              className="text-slate-700 font-sans text-xs font-bold tracking-wide text-center"
             >
-              {analysisSteps[stepIndex]}
+              [ {analysisSteps[stepIndex]} ]
             </motion.p>
           </AnimatePresence>
         </div>
